@@ -1,8 +1,8 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
-import { Building2, MapPin, Clock } from "lucide-react";
 import type { Job } from "@/lib/types";
+import { Building2, Clock, MapPin } from "lucide-react";
 
 interface JobCardProps {
 	job: Job;

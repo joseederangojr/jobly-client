@@ -2,21 +2,21 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
+import type { Job } from "@/lib/types";
 import {
 	ArrowLeft,
 	ArrowUpRight,
+	Bookmark,
 	Briefcase,
 	Building2,
 	Clock,
 	MapPin,
 	Share2,
-	Bookmark,
 	X,
 } from "lucide-react";
 import { Link } from "react-router";
-import type { Job } from "@/lib/types";
 
 interface JobDetailPanelProps {
 	job: Job;

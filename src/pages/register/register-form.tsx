@@ -1,16 +1,16 @@
-import * as React from "react";
-import { useNavigate } from "react-router";
-import { useMutation } from "@tanstack/react-query";
 import { useAppForm } from "@/components/ui/form";
-import { toast } from "sonner";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
-	register,
-	registerSchema,
 	type RegisterData,
 	type RegisterError,
 	type RegisterResult,
+	register,
+	registerSchema,
 } from "@/lib/api/auth";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { useMutation } from "@tanstack/react-query";
+import type * as React from "react";
+import { useNavigate } from "react-router";
+import { toast } from "sonner";
 
 export const RegisterForm = () => {
 	const navigate = useNavigate();

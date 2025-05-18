@@ -1,11 +1,11 @@
 "use client";
 
-import type React from "react";
-import { useState, useEffect } from "react";
-import { useSearchParams } from "react-router";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Filter, X } from "lucide-react";
+import type React from "react";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router";
 import { DepartmentMultiSelect } from "./departments-multi-select";
 import { SeniorityMultiSelect } from "./seniority-multi-select";
 

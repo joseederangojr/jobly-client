@@ -1,20 +1,18 @@
-import { useState } from "react";
-import { JobList } from "@/components/job-list";
+import { JobDetailPanel } from "@/components/job-detail-panel";
 import { JobFilters } from "@/components/job-filters";
+import { JobList } from "@/components/job-list";
 import { SearchBar } from "@/components/search-bar";
 import { Button } from "@/components/ui/button";
-import { JobDetailPanel } from "@/components/job-detail-panel";
-import { Link } from "react-router";
-import { PlusIcon } from "lucide-react";
 import type { Job } from "@/lib/types";
+import { PlusIcon } from "lucide-react";
+import { useState } from "react";
+import { Link } from "react-router";
 
 export default function HomePage() {
 	const [selectedJob, setSelectedJob] = useState<Job | null>(null);
 
 	return (
 		<div className="min-h-screen bg-[#f3f2f1]">
-			{/* Header with search */}
-
 			<div className="bg-white border-b border-gray-200 sticky top-0 z-10 shadow-sm">
 				<div className="container mx-auto py-4 px-4">
 					<div className="flex flex-col gap-4">
@@ -31,11 +29,8 @@ export default function HomePage() {
 					</div>
 				</div>
 			</div>
-
-			{/* Main content */}
 			<div className="container mx-auto py-6 px-4">
 				<div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-					{/* Job listings */}
 					<div
 						className={`${selectedJob ? "lg:col-span-7" : "lg:col-span-12"} order-1 ${selectedJob ? "hidden lg:block" : ""}`}
 					>
@@ -51,8 +46,6 @@ export default function HomePage() {
 							/>
 						</div>
 					</div>
-
-					{/* Job detail panel */}
 					{selectedJob && (
 						<div className="lg:col-span-5 order-2 h-[calc(100vh-180px)] lg:h-auto">
 							<div className="bg-white rounded border border-gray-200 shadow-sm h-full">

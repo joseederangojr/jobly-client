@@ -1,9 +1,9 @@
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
 import { BriefcaseIcon } from "lucide-react";
 import type React from "react";
 import { Link } from "react-router";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Separator } from "@/components/ui/separator";
-import { Button } from "@/components/ui/button";
 
 const Root = (props: React.PropsWithChildren) => {
 	return (

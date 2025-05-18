@@ -1,10 +1,10 @@
 "use client";
 
-import type React from "react";
-import { useSearchParams } from "react-router";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, MapPin } from "lucide-react";
+import { MapPin, Search } from "lucide-react";
+import type React from "react";
+import { useSearchParams } from "react-router";
 
 export function SearchBar() {
 	const [searchParams, setSearchParams] = useSearchParams();

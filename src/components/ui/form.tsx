@@ -8,9 +8,9 @@ import {
 	createFormHookContexts,
 	useStore,
 } from "@tanstack/react-form";
-import { Input } from "./input";
-import { Button } from "./button";
 import { Loader2Icon } from "lucide-react";
+import { Button } from "./button";
+import { Input } from "./input";
 
 const {
 	fieldContext,

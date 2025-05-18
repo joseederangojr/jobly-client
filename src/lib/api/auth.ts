@@ -1,7 +1,7 @@
+import type { HTTPError } from "ky";
 import { z } from "zod";
-import { HTTPError } from "ky";
-import { api } from "./ky";
 import type { ValidationError } from "../errors";
+import { api } from "./ky";
 
 export const loginSchema = z.object({
 	email: z.string().email({ message: "Please enter a valid email address" }),

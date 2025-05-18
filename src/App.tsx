@@ -1,7 +1,7 @@
-import * as React from "react";
 import { Loading as AuthLoading } from "@/components/auth";
-import { Routes, Route, Link } from "react-router";
 import HomeLoading from "@/pages/home/loading";
+import * as React from "react";
+import { Link, Route, Routes } from "react-router";
 
 const HomePage = React.lazy(() => import("./pages/home/page"));
 const LoginPage = React.lazy(() => import("./pages/login/page"));

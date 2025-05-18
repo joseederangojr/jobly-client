@@ -1,15 +1,15 @@
-import * as React from "react";
-import { useNavigate } from "react-router";
-import { useMutation } from "@tanstack/react-query";
 import { useAppForm } from "@/components/ui/form";
-import { toast } from "sonner";
 import {
-	login,
-	loginSchema,
 	type LoginData,
 	type LoginError,
 	type LoginResult,
+	login,
+	loginSchema,
 } from "@/lib/api/auth";
+import { useMutation } from "@tanstack/react-query";
+import type * as React from "react";
+import { useNavigate } from "react-router";
+import { toast } from "sonner";
 
 export const LoginForm = () => {
 	const navigate = useNavigate();
