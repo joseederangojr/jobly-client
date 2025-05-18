@@ -25,3 +25,47 @@ export const login = (data: LoginData) => {
 			throw await err.response.json();
 		});
 };
+
+export const registerSchema = z
+	.object({
+		name: z.string().min(2, { message: "Name must be at least 2 characters" }),
+		email: z.string().email({ message: "Please enter a valid email address" }),
+		password: z
+			.string()
+			.min(8, { message: "Password must be at least 8 characters" }),
+		passwordConfirmation: z
+			.string()
+			.min(8, { message: "Password must be at least 8 characters" }),
+		role: z.enum(["candidate", "employer"], {
+			required_error: "Please select a role",
+		}),
+	})
+	.refine(
+		(data) => {
+			// If role is employer, companyName is required
+			if (data.password === data.passwordConfirmation) {
+				return true;
+			}
+			return true;
+		},
+		{
+			message: "Password should be confirmed",
+			path: ["passwordConfirmation"],
+		},
+	);
+export type RegisterData = z.infer<typeof registerSchema>;
+export type RegisterError = ValidationError<RegisterData>;
+export type RegisterResult = {
+	accessToken: string;
+	expiresIn: string;
+};
+export const register = (data: RegisterData) => {
+	return api
+		.post("auth/register", {
+			json: data,
+		})
+		.json<RegisterResult>()
+		.catch(async (err: HTTPError<RegisterError>) => {
+			throw await err.response.json();
+		});
+};

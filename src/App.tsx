@@ -1,8 +1,9 @@
 import * as React from "react";
-import LoginLoading from "@/pages/login/loading";
+import { Loading as AuthLoading } from "@/components/auth";
 import { Routes, Route, Link } from "react-router";
 
 const LoginPage = React.lazy(() => import("./pages/login/page"));
+const RegisterPage = React.lazy(() => import("./pages/register/page"));
 
 export default function App() {
 	return (
@@ -10,11 +11,20 @@ export default function App() {
 			<Route
 				path="/login"
 				element={
-					<React.Suspense fallback={<LoginLoading />}>
+					<React.Suspense fallback={<AuthLoading />}>
 						<LoginPage />
 					</React.Suspense>
 				}
 			/>
+			<Route
+				path="/register"
+				element={
+					<React.Suspense fallback={<AuthLoading />}>
+						<RegisterPage />
+					</React.Suspense>
+				}
+			/>
+
 			<Route
 				path="*"
 				element={

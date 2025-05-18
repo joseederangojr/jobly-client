@@ -1,19 +1,17 @@
 import * as Auth from "@/components/auth";
-import { LoginForm } from "./login-form";
-
-export default function LoginPage() {
+import { RegisterForm } from "./register-form";
+export default function RegisterPage() {
 	return (
 		<Auth.Root>
 			<Auth.HeaderRoot>
 				<Auth.HeaderLogo />
-				<Auth.HeaderTitle>Sign in to Jobly</Auth.HeaderTitle>
-				<Auth.HeaderLink text="Or" to="/register">
-					create a new account
+				<Auth.HeaderTitle>Create an account</Auth.HeaderTitle>
+				<Auth.HeaderLink text="Already have an account?" to="/login">
+					Sign in
 				</Auth.HeaderLink>
 			</Auth.HeaderRoot>
-			<LoginForm />
+			<RegisterForm />
 			<Auth.Footer />
-
 			<Auth.FooterActions>
 				<Auth.AuthWithButton>Google</Auth.AuthWithButton>
 				<Auth.AuthWithButton>LinkedIn</Auth.AuthWithButton>
