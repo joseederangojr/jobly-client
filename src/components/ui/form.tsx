@@ -11,6 +11,13 @@ import {
 import { Loader2Icon } from "lucide-react";
 import { Button } from "./button";
 import { Input } from "./input";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "./select";
 
 const {
 	fieldContext,
@@ -29,6 +36,7 @@ const { useAppForm, withForm } = createFormHook({
 		FormMessage,
 		FormItem,
 		FormInput,
+		FormSelect,
 	},
 	formComponents: {
 		FormSubmit,
@@ -82,7 +90,6 @@ const useFieldContext = () => {
 function FormLabel(props: React.ComponentProps<typeof Label>) {
 	const { className, ...rest } = props;
 	const { formItemId, errors } = useFieldContext();
-
 	return (
 		<Label
 			data-slot="form-label"
@@ -171,7 +178,44 @@ function FormSubmit(props: FormSubmitProps) {
 					{children}
 				</Button>
 			)}
-		></form.Subscribe>
+		/>
+	);
+}
+
+type OptionItem = {
+	label: string;
+	value: string;
+};
+interface FormSelectProps {
+	value: string;
+	onChange: (value: string) => void;
+	placeholder: string;
+	label: string;
+	options: OptionItem[];
+}
+
+function FormSelect(props: FormSelectProps) {
+	return (
+		<FormItem>
+			<FormLabel className="text-[#2d2d2d]">{props.label}</FormLabel>
+			<FormControl>
+				<Select onValueChange={props.onChange} defaultValue={props.value}>
+					<FormControl>
+						<SelectTrigger className="border-[#e4e2e0] focus:ring-[#2557a7]">
+							<SelectValue placeholder={props.placeholder} />
+						</SelectTrigger>
+					</FormControl>
+					<SelectContent>
+						{props.options.map((item) => (
+							<SelectItem key={`select-${item.value}`} value={item.value}>
+								{item.label}
+							</SelectItem>
+						))}
+					</SelectContent>
+				</Select>
+			</FormControl>
+			<FormMessage />
+		</FormItem>
 	);
 }
 

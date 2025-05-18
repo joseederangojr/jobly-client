@@ -2,10 +2,12 @@ import { Loading as AuthLoading } from "@/components/auth";
 import HomeLoading from "@/pages/home/loading";
 import * as React from "react";
 import { Link, Route, Routes } from "react-router";
+import CreateJobLoading from "./pages/job-create/loading";
 
 const HomePage = React.lazy(() => import("./pages/home/page"));
 const LoginPage = React.lazy(() => import("./pages/login/page"));
 const RegisterPage = React.lazy(() => import("./pages/register/page"));
+const CreateJobPage = React.lazy(() => import("./pages/job-create/page"));
 
 export default function App() {
 	return (
@@ -32,6 +34,15 @@ export default function App() {
 				element={
 					<React.Suspense fallback={<AuthLoading />}>
 						<RegisterPage />
+					</React.Suspense>
+				}
+			/>
+
+			<Route
+				path="/job/create"
+				element={
+					<React.Suspense fallback={<CreateJobLoading />}>
+						<CreateJobPage />
 					</React.Suspense>
 				}
 			/>
