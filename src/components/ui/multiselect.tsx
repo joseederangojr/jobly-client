@@ -137,6 +137,7 @@ export const MultiSelect = React.forwardRef<
 		},
 		ref,
 	) => {
+		const id = React.useId();
 		const [isPopoverOpen, setIsPopoverOpen] = React.useState(false);
 		const [isAnimating, setIsAnimating] = React.useState(false);
 
@@ -205,7 +206,7 @@ export const MultiSelect = React.forwardRef<
 										const IconComponent = option?.icon;
 										return (
 											<Badge
-												key={value}
+												key={`badge-${id}-${value}`}
 												className={cn(
 													isAnimating ? "animate-bounce" : "",
 													multiSelectVariants({ variant }),
@@ -305,7 +306,7 @@ export const MultiSelect = React.forwardRef<
 									const isSelected = value.includes(option.value);
 									return (
 										<CommandItem
-											key={option.value}
+											key={`option-${id}-${option.value}`}
 											onSelect={() => toggleOption(option.value)}
 											className="cursor-pointer"
 										>

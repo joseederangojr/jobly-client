@@ -77,3 +77,11 @@ export const rejectJob = (id: number) => {
 			throw await err.response.json();
 		});
 };
+
+type GetJobOptionsResult = {
+	department: string[];
+	seniority: string[];
+};
+export const getJobOptions = () => {
+	return api.get("job-ad/options").json<GetJobOptionsResult>();
+};

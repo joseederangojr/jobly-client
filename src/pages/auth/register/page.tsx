@@ -1,4 +1,4 @@
-import * as Auth from "@/components/auth";
+import * as Auth from "@/pages/auth/auth";
 import { RegisterForm } from "./register-form";
 export default function RegisterPage() {
 	return (

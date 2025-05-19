@@ -1,24 +1,25 @@
+import { createGetJobOptionsQuery, useGetJobOptionsQuery } from "@/lib/query";
 import { MultiSelect } from "./ui/multiselect";
-
-const departments = [
-	"Software Engineering",
-	"Product Management",
-	"Design",
-	"Marketing",
-	"Sales",
-].map((department) => ({
-	label: department,
-	value: department.toLowerCase(),
-}));
+import { useQuery } from "@tanstack/react-query";
 
 interface DepartmentMultiSelectProps
 	extends Omit<React.ComponentPropsWithoutRef<typeof MultiSelect>, "options"> {}
 
 export const DepartmentMultiSelect = (props: DepartmentMultiSelectProps) => {
+	const { isLoading, data } = useQuery({
+		...createGetJobOptionsQuery(),
+		select: (data) =>
+			data.department.map((label) => ({
+				label: label,
+				value: label.toLowerCase(),
+			})),
+		initialData: { department: [], seniority: [] },
+	});
 	return (
 		<MultiSelect
-			options={departments}
-			placeholder="Select department"
+			disabled={isLoading}
+			options={data}
+			placeholder="Department"
 			variant="inverted"
 			maxCount={1}
 			{...props}

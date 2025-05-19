@@ -1,22 +1,17 @@
-"use client";
-
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Filter, X } from "lucide-react";
-import type React from "react";
-import { useEffect, useState } from "react";
+import { Filter } from "lucide-react";
 import { useSearchParams } from "react-router";
-import { DepartmentMultiSelect } from "./departments-multi-select";
-import { SeniorityMultiSelect } from "./seniority-multi-select";
+import { DepartmentMultiSelect } from "@/components/departments-multi-select";
+import { SeniorityMultiSelect } from "@/components/seniority-multi-select";
 
-export function JobFilters() {
+export function SearchFilter() {
 	const [searchParams, setSearchParams] = useSearchParams();
 	const hasFilters =
 		searchParams.has("department") && searchParams.has("seniority");
 	const handleMultiSelectChange = (field: string) => (items: string[]) => {
 		setSearchParams((prev) => {
 			prev.delete(field);
-			items.forEach((item, i) => {
+			items.forEach((item, _) => {
 				prev.append(field, item);
 			});
 

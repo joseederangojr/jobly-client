@@ -17,20 +17,24 @@ import {
 	X,
 } from "lucide-react";
 import { Link } from "react-router";
+import { useHomeContext } from "./home";
 
-interface JobDetailPanelProps {
-	job: Job;
-	onClose: () => void;
-}
+export function JobDetailPanel() {
+	const ctx = useHomeContext();
 
-export function JobDetailPanel({ job, onClose }: JobDetailPanelProps) {
+	if (!ctx.selectedJob) return null;
+	const job = ctx.selectedJob;
+	const handleClose = () => {
+		ctx.setSelectedJob?.(undefined);
+	};
+
 	return (
 		<div className="h-full flex flex-col bg-white border-l border-gray-200">
 			<div className="p-4 border-b border-gray-200 flex justify-between items-center sticky top-0 bg-white z-10">
 				<Button
 					variant="ghost"
 					size="sm"
-					onClick={onClose}
+					onClick={handleClose}
 					className="text-[#595959]"
 				>
 					<ArrowLeft className="h-4 w-4 mr-2" />
@@ -45,7 +49,7 @@ export function JobDetailPanel({ job, onClose }: JobDetailPanelProps) {
 				<Button
 					variant="ghost"
 					size="icon"
-					onClick={onClose}
+					onClick={handleClose}
 					className="lg:hidden"
 				>
 					<X className="h-5 w-5" />

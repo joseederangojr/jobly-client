@@ -1,4 +1,4 @@
-import { Loading as AuthLoading } from "@/components/auth";
+import { Loading as AuthLoading } from "@/pages/auth/auth";
 import HomeLoading from "@/pages/home/loading";
 import * as React from "react";
 import { Link, Route, Routes } from "react-router";
@@ -7,8 +7,8 @@ import AdminLoading from "./pages/admin/loading";
 import { RootLayout } from "./components/layout";
 
 const HomePage = React.lazy(() => import("./pages/home/page"));
-const LoginPage = React.lazy(() => import("./pages/login/page"));
-const RegisterPage = React.lazy(() => import("./pages/register/page"));
+const LoginPage = React.lazy(() => import("./pages/auth/login/page"));
+const RegisterPage = React.lazy(() => import("./pages/auth/register/page"));
 const CreateJobPage = React.lazy(() => import("./pages/job-create/page"));
 const AdminPage = React.lazy(() => import("./pages/admin/page"));
 

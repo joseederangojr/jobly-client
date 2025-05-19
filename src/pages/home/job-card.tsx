@@ -1,22 +1,29 @@
-"use client";
-
+import * as React from "react";
 import { Badge } from "@/components/ui/badge";
 import type { Job } from "@/lib/types";
+import { cn } from "@/lib/utils";
 import { Building2, Clock, MapPin } from "lucide-react";
+import { useHomeContext } from "@/pages/home/home";
 
-interface JobCardProps {
+interface JobCardProps extends React.ComponentProps<"div"> {
 	job: Job;
-	isSelected?: boolean;
-	onClick?: (job: Job) => void;
 }
 
-export function JobCard({ job, isSelected = false, onClick }: JobCardProps) {
+export const JobCard = React.memo(function JobCard(props: JobCardProps) {
+	const { job, ...rest } = props;
+	const ctx = useHomeContext();
+	const isSelected = ctx?.selectedJob?.id === job.id;
+	const handleClick = () => {
+		ctx.setSelectedJob?.(job);
+	};
 	return (
 		<div
-			className={`p-4 border-b border-gray-200 hover:bg-[#f9f9f9] transition-colors cursor-pointer ${
-				isSelected ? "bg-[#f3f2f1]" : ""
-			}`}
-			onClick={() => onClick && onClick(job)}
+			className={cn(
+				"p-4 border-b border-gray-200 hover:bg-[#f9f9f9] transition-colors cursor-pointer",
+				isSelected ? "bg-[#f3f2f1]" : "",
+			)}
+			onClick={handleClick}
+			{...rest}
 		>
 			<h2 className="text-lg font-semibold text-[#2557a7] mb-1">{job.name}</h2>
 
@@ -64,7 +71,7 @@ export function JobCard({ job, isSelected = false, onClick }: JobCardProps) {
 			</div>
 		</div>
 	);
-}
+});
 
 // Helper function to format time ago
 function getTimeAgo(dateString: string | Date): string {
