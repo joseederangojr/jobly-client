@@ -12,7 +12,7 @@ const attachAccessToken = (request: KyRequest) => {
 	}
 };
 export const api = ky.extend({
-	prefixUrl: import.meta.env.VITE_APP_API_ENDPOINT,
+	prefixUrl: `${import.meta.env.VITE_APP_API_ENDPOINT}/api`,
 	mode: "cors",
 	hooks: {
 		beforeRequest: [attachAccessToken, requestToSnakeCase],

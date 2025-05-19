@@ -7,13 +7,14 @@ import {
 	register,
 	registerSchema,
 } from "@/lib/api/auth";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type * as React from "react";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
 
 export const RegisterForm = () => {
 	const navigate = useNavigate();
+	const queryClient = useQueryClient();
 	const registerMutation = useMutation<
 		RegisterResult,
 		RegisterError,
@@ -49,13 +50,17 @@ export const RegisterForm = () => {
 				},
 				onSuccess(data) {
 					toast.success("Register successful", {
-						description: "Welcome back to Jobly!",
+						description: "Welcome to Jobly!",
 						duration: 1500,
 						onAutoClose: () => navigate("/"),
 					});
 
 					window.localStorage.setItem("token", data.accessToken);
 					window.localStorage.setItem("expires", data.expiresIn);
+
+					queryClient.invalidateQueries({
+						queryKey: ["me"],
+					});
 				},
 			});
 		},

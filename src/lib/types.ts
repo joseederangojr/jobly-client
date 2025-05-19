@@ -2,6 +2,8 @@ export type User = {
 	id: number;
 	name: string;
 	email: string;
+	role: string;
+	notifications?: Notification[];
 	createdAt: Date;
 	updatedAt: Date;
 	deletedAt?: Date;
@@ -57,4 +59,15 @@ export type Paginated<D = any> = {
 	prevPageUrl: string | null;
 	to: number;
 	total: number;
+};
+
+export type Notification = {
+	id: string;
+	notifiableType: string;
+	notifiableId: number;
+	job: Job;
+	employer: User;
+	readAt: Date;
+	createdAt: Date;
+	updatedAt: Date;
 };

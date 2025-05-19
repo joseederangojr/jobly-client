@@ -2,6 +2,11 @@ import type { HTTPError } from "ky";
 import { z } from "zod";
 import type { ValidationError } from "../errors";
 import { api } from "./ky";
+import type { User } from "../types";
+
+export const getCurrentUser = () => {
+	return api.get("auth/current").json<User>();
+};
 
 export const loginSchema = z.object({
 	email: z.string().email({ message: "Please enter a valid email address" }),

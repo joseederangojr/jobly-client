@@ -6,13 +6,14 @@ import {
 	login,
 	loginSchema,
 } from "@/lib/api/auth";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type * as React from "react";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
 
 export const LoginForm = () => {
 	const navigate = useNavigate();
+	const queryClient = useQueryClient();
 	const loginMutation = useMutation<LoginResult, LoginError, LoginData>({
 		mutationFn: async (data) => login(data),
 	});
@@ -48,6 +49,10 @@ export const LoginForm = () => {
 
 					window.localStorage.setItem("token", data.accessToken);
 					window.localStorage.setItem("expires", data.expiresIn);
+
+					queryClient.invalidateQueries({
+						queryKey: ["me"],
+					});
 				},
 			});
 		},

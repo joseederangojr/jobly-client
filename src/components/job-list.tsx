@@ -3,6 +3,7 @@
 import { JobCard } from "@/components/job-card";
 import { getJobs } from "@/lib/api/job";
 import type { Job } from "@/lib/types";
+import { getJobsQuery } from "@/query/get-job-ads-query";
 import { useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { useSearchParams } from "react-router";
@@ -14,10 +15,7 @@ interface JobListProps {
 
 export function JobList({ onSelectJob, selectedJobId }: JobListProps) {
 	const [searchParams] = useSearchParams();
-	const { isLoading, data: jobs } = useQuery({
-		queryKey: ["jobs", searchParams.toString()],
-		queryFn: () => getJobs(searchParams),
-	});
+	const { isLoading, data: jobs } = useQuery(getJobsQuery(searchParams));
 
 	const handleJobClick = (job: Job) => {
 		if (onSelectJob) {

@@ -1,6 +1,7 @@
 import { JobDetailPanel } from "@/components/job-detail-panel";
 import { JobFilters } from "@/components/job-filters";
 import { JobList } from "@/components/job-list";
+import { useCurrentUser } from "@/components/layout";
 import { SearchBar } from "@/components/search-bar";
 import { Button } from "@/components/ui/button";
 import type { Job } from "@/lib/types";
@@ -10,6 +11,7 @@ import { Link } from "react-router";
 
 export default function HomePage() {
 	const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+	const { role } = useCurrentUser();
 	return (
 		<div className="min-h-screen bg-[#f3f2f1]">
 			<div className="bg-white border-b border-gray-200 sticky top-0 z-10 shadow-sm">
@@ -17,11 +19,13 @@ export default function HomePage() {
 					<div className="flex flex-col gap-4">
 						<div className="flex items-center justify-between">
 							<h1 className="text-2xl font-bold text-[#2d2d2d]">Job Search</h1>
-							<Link to="/job/create">
-								<Button className="bg-[#2557a7] hover:bg-[#1f4b8f] text-white">
-									<PlusIcon className="mr-2 h-4 w-4" /> Post a job
-								</Button>
-							</Link>
+							{role === "employer" && (
+								<Link to="/job/create">
+									<Button className="bg-[#2557a7] hover:bg-[#1f4b8f] text-white">
+										<PlusIcon className="mr-2 h-4 w-4" /> Post a job
+									</Button>
+								</Link>
+							)}
 						</div>
 						<SearchBar />
 						<JobFilters />

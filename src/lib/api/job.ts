@@ -59,3 +59,21 @@ export const createJob = (data: CreateJobData) => {
 			throw await err.response.json();
 		});
 };
+
+export const approveJob = (id: number) => {
+	return api
+		.patch(`job-ad/${id}/approve`)
+		.json<CreateJobResult>()
+		.catch(async (err: HTTPError<CreateJobError>) => {
+			throw await err.response.json();
+		});
+};
+
+export const rejectJob = (id: number) => {
+	return api
+		.patch(`job-ad/${id}/reject`)
+		.json<CreateJobResult>()
+		.catch(async (err: HTTPError<CreateJobError>) => {
+			throw await err.response.json();
+		});
+};
