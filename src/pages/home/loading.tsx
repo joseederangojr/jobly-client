@@ -26,13 +26,49 @@ export default function HomeLoading() {
 					</div>
 				</div>
 			</div>
-
 			{/* Main content skeleton */}
 			<div className="container mx-auto py-6 px-4">
-				<div className="flex justify-center items-center py-12">
-					<Loader2 className="h-12 w-12 text-[#2557a7] animate-spin" />
+				<div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+					{/* Job listings skeleton */}
+					<div className="lg:col-span-12">
+						<div className="bg-white rounded border border-gray-200 shadow-sm">
+							<div className="p-4 border-b border-gray-200">
+								<Skeleton className="h-6 w-32" />
+							</div>
+
+							{/* Job cards skeleton */}
+							<div className="divide-y divide-gray-200">
+								{Array.from({ length: 5 }).map((_, index) => (
+									<div key={index} className="p-4">
+										<Skeleton className="h-6 w-3/4 mb-2" />
+										<div className="flex items-center gap-3 mb-2">
+											<div className="flex items-center">
+												<Skeleton className="h-4 w-4 mr-1" />
+												<Skeleton className="h-4 w-32" />
+											</div>
+											<div className="flex items-center">
+												<Skeleton className="h-4 w-4 mr-1" />
+												<Skeleton className="h-4 w-32" />
+											</div>
+										</div>
+										<div className="flex flex-wrap gap-2 mb-3">
+											<Skeleton className="h-6 w-24" />
+											<Skeleton className="h-6 w-24" />
+											<Skeleton className="h-6 w-24" />
+										</div>
+										<Skeleton className="h-4 w-full mb-2" />
+										<Skeleton className="h-4 w-2/3 mb-3" />
+										<div className="flex items-center">
+											<Skeleton className="h-3 w-3 mr-1" />
+											<Skeleton className="h-3 w-24" />
+										</div>
+									</div>
+								))}
+							</div>
+						</div>
+					</div>
 				</div>
-			</div>
+			</div>{" "}
 		</div>
 	);
 }
