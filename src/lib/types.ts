@@ -45,7 +45,7 @@ type PaginatedLink = {
 	label: string;
 	active: boolean;
 };
-export type Paginated<D = any> = {
+export type Paginated<D> = {
 	data: D[];
 	currentPage: number;
 	firstPageUrl: string | null;

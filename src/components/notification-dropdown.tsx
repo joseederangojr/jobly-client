@@ -11,44 +11,132 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Bell, CheckCircle, Info, XCircle } from "lucide-react";
+import { Bell, CheckCircleIcon, Info, XCircleIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { Job, Notification, User } from "@/lib/types";
-import { useApproveJob, useRejectJob } from "@/pages/admin/job-list";
-import { useQueryClient } from "@tanstack/react-query";
-import { useEcho, useEchoModel } from "@laravel/echo-react";
+import type { Job, Notification } from "@/lib/types";
+import {
+	useApproveJob,
+	useMarkAllAsReadMutation,
+	useRejectJob,
+} from "@/lib/mutation";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEchoModel } from "@laravel/echo-react";
 import { useCurrentUser } from "./layout";
 import { toast } from "sonner";
+import {
+	createGetUserNotificationQuery,
+	useGetUserNotificationQuery,
+} from "@/lib/query";
+
+type NotificationActionProps = {
+	job: Job;
+};
+const NotificationAction = (props: NotificationActionProps) => {
+	const approveMutation = useApproveJob();
+	const rejectMutation = useRejectJob();
+	const approve = (event: React.MouseEvent) => {
+		event.preventDefault();
+		event.stopPropagation();
+		approveMutation.mutate(props.job.id);
+	};
+	const reject = (event: React.MouseEvent) => {
+		event.preventDefault();
+		event.stopPropagation();
+		rejectMutation.mutate(props.job.id);
+	};
+	return (
+		<React.Fragment>
+			<br />
+			<div className="flex gap-2 item-center">
+				<Button size="sm" variant="outline" onClick={approve}>
+					<CheckCircleIcon className="h-4 w-4 mr-2 text-[#0a6c2e]" />
+					Approve Job
+				</Button>
+
+				<Button size="sm" variant="outline" onClick={reject}>
+					<XCircleIcon className="h-4 w-4 mr-2 text-[#c42b1c]" />
+					Reject Job
+				</Button>
+			</div>
+		</React.Fragment>
+	);
+};
+
+const NotificationMarkAllAsRead = () => {
+	const markAllAsReadMutation = useMarkAllAsReadMutation();
+	const { data } = useQuery({
+		...createGetUserNotificationQuery(),
+		select: (notifications) => notifications.map((n) => n.id),
+	});
+	return (
+		<Button
+			variant="ghost"
+			size="sm"
+			onClick={() => markAllAsReadMutation.mutate(data)}
+			className="h-auto p-0 text-[#2557a7]"
+		>
+			Mark all as read
+		</Button>
+	);
+};
+
+type NotificationDropdownItemProps = {
+	notification: Notification;
+};
+const NotificationDropdownItem = (props: NotificationDropdownItemProps) => {
+	const { notification } = props;
+	const markAllAsReadMutation = useMarkAllAsReadMutation();
+	return (
+		<DropdownMenuItem
+			asChild
+			className={`flex items-start p-3 cursor-pointer ${!notification.readAt ? "bg-[#f3f2f1]" : ""}`}
+			onClick={() => markAllAsReadMutation.mutate([notification.id])}
+		>
+			<Link to={`/job/${notification.job.id}`}>
+				<div className="mr-2 mt-0.5">
+					{!notification.readAt && <Info className="h-5 w-5 text-[#0066cc]" />}
+				</div>
+				<div className="flex-1">
+					<div className="text-[#2d2d2d]">
+						<strong>{notification.employer.name} </strong>just posted their
+						first Job{" "}
+					</div>
+					{notification.job.status === "pending" && (
+						<NotificationAction job={notification.job} />
+					)}
+					<div className="text-xs text-[#767676] mt-1">
+						{new Date(notification.createdAt).toLocaleString()}
+					</div>
+				</div>
+				{!notification.readAt && (
+					<div
+						className="ml-2 h-2 w-2 rounded-full bg-[#2557a7]"
+						aria-hidden="true"
+					/>
+				)}
+			</Link>
+		</DropdownMenuItem>
+	);
+};
 
 export function NotificationDropdown() {
-	const { notifications, id } = useCurrentUser();
-	const [notifs, setNotifs] = React.useState(() => notifications);
+	const { id } = useCurrentUser();
+	const { data: notifications } = useGetUserNotificationQuery();
 	const [open, setOpen] = React.useState(false);
 	const queryClient = useQueryClient();
-	const invalidateUser = () => {
-		queryClient.invalidateQueries({
-			queryKey: ["me"],
-		});
-	};
-	const approve = useApproveJob();
-	const reject = useRejectJob();
-	const unreadCount = notifs?.filter((n) => !n.readAt).length ?? 0;
+
+	const unreadCount =
+		notifications?.filter((n: Notification) => !n.readAt).length ?? 0;
 
 	const { channel, leaveChannel } = useEchoModel("App.Models.User", id);
 
 	React.useEffect(() => {
-		channel().notification((notification) => {
-			setNotifs((prev) => [
-				{ ...notification, createdAt: new Date(), updated: new Date() },
-				...prev,
-			]);
-
+		channel().notification((notification: Notification) => {
 			toast.info(`${notification.employer.name} just posted their first job`, {
-				action: {
-					label: "Approve",
-					onClick: () => approve(notification.job),
-				},
+				action: <NotificationAction job={notification.job} />,
 			});
+
+			queryClient.invalidateQueries({ queryKey: ["notifications"] });
 		});
 		return leaveChannel;
 	}, []);
@@ -61,8 +149,6 @@ export function NotificationDropdown() {
 					size="icon"
 					className={cn(
 						"relative transition-all hover:bg-gray-100 rounded-full",
-						unreadCount > 0 &&
-							"after:absolute after:top-1 after:right-1 after:w-2 after:h-2 after:bg-red-500 after:rounded-full",
 					)}
 				>
 					<Bell
@@ -82,19 +168,10 @@ export function NotificationDropdown() {
 			<DropdownMenuContent align="end" className="w-80">
 				<DropdownMenuLabel className="flex items-center justify-between">
 					<span>Notifications</span>
-					{unreadCount > 0 && (
-						<Button
-							variant="ghost"
-							size="sm"
-							onClick={() => {}}
-							className="h-auto p-0 text-[#2557a7]"
-						>
-							Mark all as read
-						</Button>
-					)}
+					{unreadCount > 0 && <NotificationMarkAllAsRead />}
 				</DropdownMenuLabel>
 				<DropdownMenuSeparator />
-				{notifs.length === 0 ? (
+				{notifications.length === 0 ? (
 					<div className="py-4 px-2 text-center text-sm text-[#595959]">
 						<p>You have no notifications</p>
 					</div>
@@ -102,56 +179,11 @@ export function NotificationDropdown() {
 					<>
 						<ScrollArea className="h-[300px]">
 							<DropdownMenuGroup>
-								{notifs.map((notification) => (
-									<DropdownMenuItem
-										key={notification.id}
-										className={`flex items-start p-3 cursor-pointer ${!notification.readAt ? "bg-[#f3f2f1]" : ""}`}
-									>
-										<div className="mr-2 mt-0.5">
-											{!notification.readAt && (
-												<Info className="h-5 w-5 text-[#0066cc]" />
-											)}
-										</div>
-										<div className="flex-1">
-											<div className="text-[#2d2d2d]">
-												<strong>{notification.employer.name} </strong>just
-												posted their first Job{" "}
-											</div>
-											{notification.job.status === "pending" && (
-												<div className="text-sm text-[#595959]">
-													<Button
-														variant="ghost"
-														onClick={() => {
-															approve(notification.job);
-															invalidateUser();
-														}}
-													>
-														<CheckCircle className="h-4 w-4 mr-2 text-[#0a6c2e]" />
-														Approve
-													</Button>
-													<Button
-														variant="ghost"
-														onClick={() => {
-															reject(notification.job);
-															invalidateUser();
-														}}
-													>
-														<XCircle className="h-4 w-4 mr-2 text-[#c42b1c]" />
-														Reject
-													</Button>
-												</div>
-											)}
-											<div className="text-xs text-[#767676] mt-1">
-												{new Date(notification.createdAt).toLocaleString()}
-											</div>
-										</div>
-										{!notification.readAt && (
-											<div
-												className="ml-2 h-2 w-2 rounded-full bg-[#2557a7]"
-												aria-hidden="true"
-											/>
-										)}
-									</DropdownMenuItem>
+								{notifications.map((notification: Notification) => (
+									<NotificationDropdownItem
+										key={`notif-${notification.id}`}
+										notification={notification}
+									/>
 								))}
 							</DropdownMenuGroup>
 						</ScrollArea>

@@ -1,6 +1,6 @@
 import type { ValidationError } from "@/lib/errors";
 import type { Job, Paginated } from "@/lib/types";
-import type { HTTPError } from "ky";
+import { HTTPError } from "ky";
 import { z } from "zod";
 import { api } from "./ky";
 
@@ -10,6 +10,10 @@ export const getJobs = (searchParams: URLSearchParams) => {
 			searchParams,
 		})
 		.json<Paginated<Job>>();
+};
+
+export const getJob = (id: number) => {
+	return api.get(`job-ad/${id}`).json<Job>();
 };
 
 export const createJobSchema = z.object({
@@ -46,36 +50,47 @@ export const createJobSchema = z.object({
 export type CreateJobData = z.infer<typeof createJobSchema>;
 export type CreateJobResult = Job;
 export type CreateJobError = ValidationError<CreateJobData>;
-export const createJob = (data: CreateJobData) => {
-	return api
-		.post("job-ad", {
-			json: {
-				...data,
-				keywords: data.keywords.split(",").map((x) => x.trim()),
-			},
-		})
-		.json<CreateJobResult>()
-		.catch(async (err: HTTPError<CreateJobError>) => {
+export const createJob = async (data: CreateJobData) => {
+	try {
+		return api
+			.post("job-ad", {
+				json: {
+					...data,
+					keywords: data.keywords.split(",").map((x) => x.trim()),
+				},
+			})
+			.json<CreateJobResult>();
+	} catch (err) {
+		if (err instanceof HTTPError) {
 			throw await err.response.json();
-		});
+		}
+
+		throw err;
+	}
 };
 
-export const approveJob = (id: number) => {
-	return api
-		.patch(`job-ad/${id}/approve`)
-		.json<CreateJobResult>()
-		.catch(async (err: HTTPError<CreateJobError>) => {
+export const approveJob = async (id: number) => {
+	try {
+		return await api.patch(`job-ad/${id}/approve`).json<CreateJobResult>();
+	} catch (err) {
+		if (err instanceof HTTPError) {
 			throw await err.response.json();
-		});
+		}
+
+		throw err;
+	}
 };
 
-export const rejectJob = (id: number) => {
-	return api
-		.patch(`job-ad/${id}/reject`)
-		.json<CreateJobResult>()
-		.catch(async (err: HTTPError<CreateJobError>) => {
+export const rejectJob = async (id: number) => {
+	try {
+		return await api.patch(`job-ad/${id}/reject`).json<CreateJobResult>();
+	} catch (err) {
+		if (err instanceof HTTPError) {
 			throw await err.response.json();
-		});
+		}
+
+		throw err;
+	}
 };
 
 type GetJobOptionsResult = {

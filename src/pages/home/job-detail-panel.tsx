@@ -40,12 +40,14 @@ export function JobDetailPanel() {
 					<ArrowLeft className="h-4 w-4 mr-2" />
 					Back to results
 				</Button>
-				<Link to={`/job/${job.id}`} target="_blank">
-					<Button variant="ghost" size="sm" className="text-[#2557a7]">
-						View full page
-						<ArrowUpRight className="h-4 w-4 ml-2" />
-					</Button>
-				</Link>
+				{ctx.selectedJob.status !== "external" && (
+					<Link to={`/job/${job.id}`} target="_blank">
+						<Button variant="ghost" size="sm" className="text-[#2557a7]">
+							View full page
+							<ArrowUpRight className="h-4 w-4 ml-2" />
+						</Button>
+					</Link>
+				)}
 				<Button
 					variant="ghost"
 					size="icon"

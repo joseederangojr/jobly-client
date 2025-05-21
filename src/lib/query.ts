@@ -1,41 +1,59 @@
-import { getJobOptions, getJobs } from "@/lib/api/job";
-import { queryOptions, useQuery } from "@tanstack/react-query";
+import { getJob, getJobOptions, getJobs } from "@/lib/api/job";
+import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { useSearchParams } from "react-router";
-import { getCurrentUser } from "./api/auth";
+import { getCurrentUser, getUserNotifications } from "./api/auth";
 import { createEmptyPaginatedResult, createEmptyUser } from "./utils";
+
+export const createGetJobQuery = (id: number) =>
+	queryOptions({
+		queryKey: ["jobs", { id }],
+		queryFn: () => getJob(id),
+	});
+
+export const useGetJobQuery = (id: number) => {
+	return useSuspenseQuery(createGetJobQuery(id));
+};
 
 export const createGetJobsQuery = (search: URLSearchParams) =>
 	queryOptions({
 		queryKey: ["jobs", { search: search.toString() }],
 		queryFn: () => getJobs(search),
-		initialData: () => createEmptyPaginatedResult(),
 	});
 
 export const useGetJobsQuery = () => {
 	const [searchParams] = useSearchParams();
-	return useQuery(createGetJobsQuery(searchParams));
+	return useSuspenseQuery(createGetJobsQuery(searchParams));
 };
 
 export const createGetCurrentUserQuery = () => {
 	return queryOptions({
 		queryKey: ["me"],
 		queryFn: () => getCurrentUser(),
-		initialData: () => createEmptyUser(),
 	});
 };
 
 export const useGetCurrentUserQuery = () => {
-	return useQuery(createGetCurrentUserQuery());
+	return useSuspenseQuery(createGetCurrentUserQuery());
 };
 
 export const createGetJobOptionsQuery = () => {
 	return queryOptions({
 		queryKey: ["jobs", { options: true }],
 		queryFn: () => getJobOptions(),
-		initialData: { department: [], seniority: [] },
 	});
 };
 
 export const useGetJobOptionsQuery = () => {
-	return useQuery(createGetJobOptionsQuery());
+	return useSuspenseQuery(createGetJobOptionsQuery());
+};
+
+export const createGetUserNotificationQuery = () => {
+	return queryOptions({
+		queryKey: ["notifications"],
+		queryFn: () => getUserNotifications(),
+	});
+};
+
+export const useGetUserNotificationQuery = () => {
+	return useSuspenseQuery(createGetUserNotificationQuery());
 };

@@ -89,7 +89,7 @@ const useFieldContext = () => {
 
 function FormLabel(props: React.ComponentProps<typeof Label>) {
 	const { className, ...rest } = props;
-	const { formItemId, errors } = useFieldContext();
+	const { formItemId, errors, store } = useFieldContext();
 	return (
 		<Label
 			data-slot="form-label"

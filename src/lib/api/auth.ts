@@ -1,8 +1,8 @@
-import type { HTTPError } from "ky";
+import { HTTPError } from "ky";
 import { z } from "zod";
 import type { ValidationError } from "../errors";
 import { api } from "./ky";
-import type { User } from "../types";
+import type { Notification, User } from "../types";
 
 export const getCurrentUser = () => {
 	return api.get("auth/current").json<User>();
@@ -20,15 +20,20 @@ export type LoginResult = {
 	accessToken: string;
 	expiresIn: string;
 };
-export const login = (data: LoginData) => {
-	return api
-		.post("auth/login", {
-			json: data,
-		})
-		.json<LoginResult>()
-		.catch(async (err: HTTPError<LoginError>) => {
+export const login = async (data: LoginData) => {
+	try {
+		return await api
+			.post("auth/login", {
+				json: data,
+			})
+			.json<LoginResult>();
+	} catch (err) {
+		if (err instanceof HTTPError) {
 			throw await err.response.json();
-		});
+		}
+
+		throw err;
+	}
 };
 
 export const registerSchema = z
@@ -41,36 +46,54 @@ export const registerSchema = z
 		passwordConfirmation: z
 			.string()
 			.min(8, { message: "Password must be at least 8 characters" }),
-		role: z.enum(["candidate", "employer"], {
-			required_error: "Please select a role",
-		}),
+		role: z.string().min(1),
 	})
-	.refine(
-		(data) => {
-			// If role is employer, companyName is required
-			if (data.password === data.passwordConfirmation) {
-				return true;
-			}
-			return true;
-		},
-		{
-			message: "Password should be confirmed",
-			path: ["passwordConfirmation"],
-		},
-	);
+	.superRefine((data, ctx) => {
+		if (data.password !== data.passwordConfirmation) {
+			ctx.addIssue({
+				code: z.ZodIssueCode.custom,
+				message: "Password should be confirmed",
+				path: ["passwordConfirmation"],
+			});
+		}
+
+		if (!["candidate", "employer"].includes(data.role)) {
+			ctx.addIssue({
+				code: z.ZodIssueCode.custom,
+				message: "Invalid role",
+				path: ["role"],
+			});
+		}
+	});
 export type RegisterData = z.infer<typeof registerSchema>;
 export type RegisterError = ValidationError<RegisterData>;
 export type RegisterResult = {
 	accessToken: string;
 	expiresIn: string;
 };
-export const register = (data: RegisterData) => {
-	return api
-		.post("auth/register", {
-			json: data,
-		})
-		.json<RegisterResult>()
-		.catch(async (err: HTTPError<RegisterError>) => {
+export const register = async (data: RegisterData) => {
+	try {
+		return await api
+			.post("auth/register", {
+				json: data,
+			})
+			.json<RegisterResult>();
+	} catch (err) {
+		if (err instanceof HTTPError) {
 			throw await err.response.json();
-		});
+		}
+
+		throw err;
+	}
+};
+
+export const getUserNotifications = () => {
+	return api.get("user/notification").json<Notification[]>();
+};
+
+type MarkAllAsReadMutation = {
+	ids: Notification["id"][];
+};
+export const markAllAsRead = (data: MarkAllAsReadMutation) => {
+	return api.post("user/notification", { json: data }).json<Notification[]>();
 };

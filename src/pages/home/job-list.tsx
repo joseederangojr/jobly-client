@@ -1,14 +1,8 @@
 "use client";
 
+import { Skeleton } from "@/components/ui/skeleton";
 import { JobCard } from "./job-card";
 import { useGetJobsQuery } from "@/lib/query";
-import { Loader2 } from "lucide-react";
-
-const JobListLoading = () => (
-	<div className="absolute inset-0 bg-white/80 flex justify-center items-center z-10">
-		<Loader2 className="h-8 w-8 text-[#2557a7] animate-spin" />
-	</div>
-);
 
 const JobListNoResult = () => (
 	<div className="text-center py-12 px-4">
@@ -19,14 +13,41 @@ const JobListNoResult = () => (
 	</div>
 );
 
+export const JobListLoading = () => (
+	<div className="divide-y divide-gray-200">
+		{Array.from({ length: 5 }).map((_, index) => (
+			<div key={`jls-${index}`} className="p-4">
+				<Skeleton className="h-6 w-3/4 mb-2" />
+				<div className="flex items-center gap-3 mb-2">
+					<div className="flex items-center">
+						<Skeleton className="h-4 w-4 mr-1" />
+						<Skeleton className="h-4 w-32" />
+					</div>
+					<div className="flex items-center">
+						<Skeleton className="h-4 w-4 mr-1" />
+						<Skeleton className="h-4 w-32" />
+					</div>
+				</div>
+				<div className="flex flex-wrap gap-2 mb-3">
+					<Skeleton className="h-6 w-24" />
+					<Skeleton className="h-6 w-24" />
+					<Skeleton className="h-6 w-24" />
+				</div>
+				<Skeleton className="h-4 w-full mb-2" />
+				<Skeleton className="h-4 w-2/3 mb-3" />
+				<div className="flex items-center">
+					<Skeleton className="h-3 w-3 mr-1" />
+					<Skeleton className="h-3 w-24" />
+				</div>
+			</div>
+		))}
+	</div>
+);
+
 export function JobList() {
-	const { isLoading, data: jobs } = useGetJobsQuery();
+	const { data: jobs } = useGetJobsQuery();
 
-	if (isLoading) {
-		return <JobListLoading />;
-	}
-
-	if (!isLoading && jobs.data.length === 0) {
+	if (jobs.data.length === 0) {
 		return <JobListNoResult />;
 	}
 

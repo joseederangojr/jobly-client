@@ -5,12 +5,14 @@ import { Link, Route, Routes } from "react-router";
 import CreateJobLoading from "./pages/job-create/loading";
 import AdminLoading from "./pages/admin/loading";
 import { RootLayout } from "./components/layout";
+import JobShowLoading from "./pages/job-show/loading";
 
 const HomePage = React.lazy(() => import("./pages/home/page"));
 const LoginPage = React.lazy(() => import("./pages/auth/login/page"));
 const RegisterPage = React.lazy(() => import("./pages/auth/register/page"));
-const CreateJobPage = React.lazy(() => import("./pages/job-create/page"));
 const AdminPage = React.lazy(() => import("./pages/admin/page"));
+const CreateJobPage = React.lazy(() => import("./pages/job-create/page"));
+const ShowJobPage = React.lazy(() => import("./pages/job-show/page"));
 
 export default function App() {
 	return (
@@ -46,6 +48,15 @@ export default function App() {
 					element={
 						<React.Suspense fallback={<CreateJobLoading />}>
 							<CreateJobPage />
+						</React.Suspense>
+					}
+				/>
+
+				<Route
+					path="/job/:id"
+					element={
+						<React.Suspense fallback={<JobShowLoading />}>
+							<ShowJobPage />
 						</React.Suspense>
 					}
 				/>

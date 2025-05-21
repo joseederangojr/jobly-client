@@ -1,22 +1,13 @@
 import { useAppForm } from "@/components/ui/form";
-import {
-	type LoginData,
-	type LoginError,
-	type LoginResult,
-	login,
-	loginSchema,
-} from "@/lib/api/auth";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { loginSchema } from "@/lib/api/auth";
+import { useLoginMutation } from "@/lib/mutation";
 import type * as React from "react";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
 
 export const LoginForm = () => {
 	const navigate = useNavigate();
-	const queryClient = useQueryClient();
-	const loginMutation = useMutation<LoginResult, LoginError, LoginData>({
-		mutationFn: async (data) => login(data),
-	});
+	const loginMutation = useLoginMutation();
 	const form = useAppForm({
 		defaultValues: {
 			email: "",
@@ -46,13 +37,8 @@ export const LoginForm = () => {
 						duration: 1500,
 						onAutoClose: () => navigate("/"),
 					});
-
 					window.localStorage.setItem("token", data.accessToken);
 					window.localStorage.setItem("expires", data.expiresIn);
-
-					queryClient.invalidateQueries({
-						queryKey: ["me"],
-					});
 				},
 			});
 		},

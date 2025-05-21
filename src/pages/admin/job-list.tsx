@@ -1,4 +1,4 @@
-import { Link, useSearchParams } from "react-router";
+import { Link } from "react-router";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,29 +20,104 @@ import {
 	XCircle,
 } from "lucide-react";
 import type { Job } from "@/lib/types";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { approveJob, rejectJob } from "@/lib/api/job";
-import { getJobsQuery } from "@/query/get-job-ads-query";
+import { useGetJobsQuery } from "@/lib/query";
+import { useApproveJob, useRejectJob } from "@/lib/mutation";
+
+const JobListLoading = () => {
+	return (
+		<div className="text-center py-12">
+			<h3 className="text-lg font-medium text-[#2d2d2d]">Loading</h3>
+		</div>
+	);
+};
+
+const JobListNoResult = () => {
+	return (
+		<div className="text-center py-12">
+			<h3 className="text-lg font-medium text-[#2d2d2d]">No jobs found</h3>
+			<p className="text-[#595959] mt-2">There are no jobs in this category.</p>
+		</div>
+	);
+};
+
+function StatusBadge({ status }: { status: Job["status"] }) {
+	switch (status) {
+		case "pending":
+			return (
+				<Badge
+					variant="outline"
+					className="bg-[#fff8e6] text-[#946c00] border-[#946c00] hover:bg-[#fff8e6]"
+				>
+					<Clock className="h-3 w-3 mr-1" />
+					Pending
+				</Badge>
+			);
+		case "approved":
+			return (
+				<Badge
+					variant="outline"
+					className="bg-[#e6f7ed] text-[#0a6c2e] border-[#0a6c2e] hover:bg-[#e6f7ed]"
+				>
+					<CheckCircle className="h-3 w-3 mr-1" />
+					Approved
+				</Badge>
+			);
+		case "rejected":
+			return (
+				<Badge
+					variant="outline"
+					className="bg-[#fbe9e9] text-[#c42b1c] border-[#c42b1c] hover:bg-[#fbe9e9]"
+				>
+					<XCircle className="h-3 w-3 mr-1" />
+					Rejected
+				</Badge>
+			);
+		default:
+			return null;
+	}
+}
+
+interface ApproveButtonProps
+	extends React.ComponentProps<typeof DropdownMenuItem> {
+	job: Job;
+	onClick?: never;
+}
+function ApproveButton(props: ApproveButtonProps) {
+	const { job } = props;
+
+	const approveMutation = useApproveJob();
+
+	return (
+		<DropdownMenuItem onClick={() => approveMutation.mutate(job.id)} {...props}>
+			<CheckCircle className="h-4 w-4 mr-2 text-[#0a6c2e]" />
+			Approve Job
+		</DropdownMenuItem>
+	);
+}
+
+interface RejectButtonProps
+	extends React.ComponentProps<typeof DropdownMenuItem> {
+	job: Job;
+	onClick?: never;
+}
+function RejectButton(props: RejectButtonProps) {
+	const { job } = props;
+	const rejectMutation = useRejectJob();
+	return (
+		<DropdownMenuItem onClick={() => rejectMutation.mutate(job.id)}>
+			<XCircle className="h-4 w-4 mr-2 text-[#c42b1c]" />
+			Reject Job
+		</DropdownMenuItem>
+	);
+}
 
 export function JobList() {
-	const [searchParams] = useSearchParams();
-	const { isLoading, data: jobs } = useQuery(getJobsQuery(searchParams));
+	const { isLoading, data: jobs } = useGetJobsQuery();
 	if (isLoading) {
-		return (
-			<div className="text-center py-12">
-				<h3 className="text-lg font-medium text-[#2d2d2d]">Loading</h3>
-			</div>
-		);
+		return <JobListLoading />;
 	}
-	if (jobs!.data.length === 0) {
-		return (
-			<div className="text-center py-12">
-				<h3 className="text-lg font-medium text-[#2d2d2d]">No jobs found</h3>
-				<p className="text-[#595959] mt-2">
-					There are no jobs in this category.
-				</p>
-			</div>
-		);
+	if (jobs.data.length === 0) {
+		return <JobListNoResult />;
 	}
 
 	return (
@@ -59,17 +134,18 @@ export function JobList() {
 					</tr>
 				</thead>
 				<tbody className="divide-y divide-gray-200">
-					{jobs!.data.map((job) => {
+					{jobs.data.map((job) => {
 						return (
 							<tr key={job.id} className="hover:bg-[#f9f9f9]">
 								<td className="px-4 py-4">
 									<div className="flex flex-col">
-										<button
+										<Link
+											to={`/job/${job.id}`}
 											type="button"
 											className="text-[#2557a7] font-medium text-left hover:underline"
 										>
 											{job.name}
-										</button>
+										</Link>
 										<span className="text-sm text-[#595959]">
 											{job.department}
 										</span>
@@ -146,116 +222,5 @@ export function JobList() {
 				</tbody>
 			</table>
 		</div>
-	);
-}
-
-function StatusBadge({ status }: { status: Job["status"] }) {
-	switch (status) {
-		case "pending":
-			return (
-				<Badge
-					variant="outline"
-					className="bg-[#fff8e6] text-[#946c00] border-[#946c00] hover:bg-[#fff8e6]"
-				>
-					<Clock className="h-3 w-3 mr-1" />
-					Pending
-				</Badge>
-			);
-		case "approved":
-			return (
-				<Badge
-					variant="outline"
-					className="bg-[#e6f7ed] text-[#0a6c2e] border-[#0a6c2e] hover:bg-[#e6f7ed]"
-				>
-					<CheckCircle className="h-3 w-3 mr-1" />
-					Approved
-				</Badge>
-			);
-		case "rejected":
-			return (
-				<Badge
-					variant="outline"
-					className="bg-[#fbe9e9] text-[#c42b1c] border-[#c42b1c] hover:bg-[#fbe9e9]"
-				>
-					<XCircle className="h-3 w-3 mr-1" />
-					Rejected
-				</Badge>
-			);
-		default:
-			return null;
-	}
-}
-
-export const useApproveJob = () => {
-	const queryClient = useQueryClient();
-	const approveMutation = useMutation({
-		mutationFn: (id: number) => approveJob(id),
-	});
-
-	return (job: Job) =>
-		approveMutation.mutate(job.id, {
-			onSettled: () => {
-				queryClient.invalidateQueries({
-					queryKey: ["jobs"],
-				});
-
-				queryClient.invalidateQueries({
-					queryKey: ["me"],
-				});
-			},
-		});
-};
-
-interface ApproveButtonProps
-	extends React.ComponentProps<typeof DropdownMenuItem> {
-	job: Job;
-	onClick?: never;
-}
-function ApproveButton(props: ApproveButtonProps) {
-	const { job } = props;
-
-	const approve = useApproveJob();
-
-	return (
-		<DropdownMenuItem onClick={() => approve(job)} {...props}>
-			<CheckCircle className="h-4 w-4 mr-2 text-[#0a6c2e]" />
-			Approve Job
-		</DropdownMenuItem>
-	);
-}
-
-export const useRejectJob = () => {
-	const queryClient = useQueryClient();
-	const rejectMutation = useMutation({
-		mutationFn: (id: number) => rejectJob(id),
-	});
-
-	return (job: Job) =>
-		rejectMutation.mutate(job.id, {
-			onSettled: () => {
-				queryClient.invalidateQueries({
-					queryKey: ["jobs"],
-				});
-
-				queryClient.invalidateQueries({
-					queryKey: ["me"],
-				});
-			},
-		});
-};
-
-interface RejectButtonProps
-	extends React.ComponentProps<typeof DropdownMenuItem> {
-	job: Job;
-	onClick?: never;
-}
-function RejectButton(props: RejectButtonProps) {
-	const { job } = props;
-	const reject = useRejectJob();
-	return (
-		<DropdownMenuItem onClick={() => reject(job)}>
-			<XCircle className="h-4 w-4 mr-2 text-[#c42b1c]" />
-			Reject Job
-		</DropdownMenuItem>
 	);
 }

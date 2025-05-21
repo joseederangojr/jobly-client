@@ -1,13 +1,8 @@
 import { useAppForm } from "@/components/ui/form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import {
-	type RegisterData,
-	type RegisterError,
-	type RegisterResult,
-	register,
-	registerSchema,
-} from "@/lib/api/auth";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { registerSchema } from "@/lib/api/auth";
+import { useRegisterMutation } from "@/lib/mutation";
+import { useQueryClient } from "@tanstack/react-query";
 import type * as React from "react";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
@@ -15,13 +10,7 @@ import { toast } from "sonner";
 export const RegisterForm = () => {
 	const navigate = useNavigate();
 	const queryClient = useQueryClient();
-	const registerMutation = useMutation<
-		RegisterResult,
-		RegisterError,
-		RegisterData
-	>({
-		mutationFn: async (data) => register(data),
-	});
+	const registerMutation = useRegisterMutation();
 	const form = useAppForm({
 		defaultValues: {
 			name: "",
@@ -35,7 +24,7 @@ export const RegisterForm = () => {
 			onChange: registerSchema,
 		},
 		onSubmit({ value, formApi }) {
-			registerMutation.mutate(value as RegisterData, {
+			registerMutation.mutate(value, {
 				onError(error) {
 					formApi.setErrorMap({
 						onSubmit: {
@@ -167,7 +156,7 @@ export const RegisterForm = () => {
 				)}
 			/>
 			<form.AppForm>
-				<form.FormSubmit>Sign In</form.FormSubmit>
+				<form.FormSubmit>Sign Up</form.FormSubmit>
 			</form.AppForm>
 		</form>
 	);
